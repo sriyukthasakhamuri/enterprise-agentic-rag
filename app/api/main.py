@@ -1,3 +1,4 @@
+from app.services.llm_service import generate_llm_answer
 from app.services.answer_service import generate_grounded_answer
 from app.services.retrieval_service import retrieve_context
 from app.retrieval.sql_retriever import retrieve_sql_context
@@ -121,6 +122,38 @@ def ask(request: QueryRequest):
     )
 
     answer = generate_grounded_answer(
+        query=request.query,
+        context=context,
+    )
+
+    return {
+        "query": request.query,
+        "route": routed_state["route"],
+        "context": context,
+        "answer": answer,
+    }
+
+@app.post("/ask/llm")
+def ask_llm(request: QueryRequest):
+    state = {
+        "query": request.query,
+        "route": None,
+        "vector_results": [],
+        "sql_results": [],
+        "combined_context": "",
+        "answer": None,
+        "confidence": 0.0,
+        "retry_count": 0,
+    }
+
+    routed_state = route_query(state)
+
+    context = retrieve_context(
+        query=request.query,
+        route=routed_state["route"],
+    )
+
+    answer = generate_llm_answer(
         query=request.query,
         context=context,
     )
