@@ -4,3 +4,5 @@ python-dotenv
 pydantic
 langchain-ollama
 langgraph
+qdrant-client
+sentence-transformers

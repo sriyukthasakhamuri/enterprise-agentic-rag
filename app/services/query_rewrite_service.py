@@ -12,7 +12,7 @@ def rewrite_query(
     answer: str,
 ) -> str:
     prompt = f"""
-You are improving a search query for an enterprise RAG system.
+You are improving a retrieval query for an enterprise RAG system.
 
 Original query:
 {original_query}
@@ -20,15 +20,22 @@ Original query:
 Previous answer:
 {answer}
 
-Rewrite the query so retrieval can find more specific and useful evidence.
+Rewrite the query so semantic retrieval can find more useful evidence.
 
 Rules:
-- Keep the original intent.
-- Do not invent facts.
-- Make the query clearer and more specific.
-- Return only the rewritten query.
+- Preserve the original intent.
+- Do not invent companies, industries, dates, metrics, people, or facts.
+- Do not add placeholders such as [company] or [industry].
+- Do not assume information the user did not provide.
+- Make the query clearer and more searchable.
+- Return only one rewritten query.
 """
 
     response = llm.invoke(prompt)
 
-    return response.content.strip()
+    rewritten_query = response.content.strip()
+
+    if not rewritten_query:
+        return original_query
+
+    return rewritten_query

@@ -2,7 +2,7 @@ from langgraph.graph import StateGraph, END
 
 from app.agents.state import AgentState
 from app.agents.router import route_query
-from app.retrieval.vector_retriever import retrieve_vector_context
+from app.retrieval.qdrant_retriever import retrieve_qdrant_context
 from app.retrieval.sql_retriever import retrieve_sql_context
 from app.services.llm_service import generate_llm_answer
 from app.services.evaluation_service import evaluate_answer
@@ -18,9 +18,12 @@ def router_node(state: AgentState) -> AgentState:
 
 
 def vector_node(state: AgentState) -> AgentState:
-    query_to_use = state.get("rewritten_query") or state["query"]
+    query_to_use = (
+        state.get("rewritten_query")
+        or state["query"]
+    )
 
-    state["vector_results"] = retrieve_vector_context(
+    state["vector_results"] = retrieve_qdrant_context(
         query_to_use
     )
 
@@ -28,7 +31,10 @@ def vector_node(state: AgentState) -> AgentState:
 
 
 def sql_node(state: AgentState) -> AgentState:
-    query_to_use = state.get("rewritten_query") or state["query"]
+    query_to_use = (
+        state.get("rewritten_query")
+        or state["query"]
+    )
 
     state["sql_results"] = retrieve_sql_context(
         query_to_use
@@ -43,7 +49,10 @@ def answer_node(state: AgentState) -> AgentState:
         "sql_results": state["sql_results"],
     }
 
-    query_to_use = state.get("rewritten_query") or state["query"]
+    query_to_use = (
+        state.get("rewritten_query")
+        or state["query"]
+    )
 
     state["answer"] = generate_llm_answer(
         query=query_to_use,
@@ -63,6 +72,7 @@ def evaluation_node(state: AgentState) -> AgentState:
         query=state["query"],
         context=context,
         answer=state["answer"] or "",
+        route=state["route"],
     )
 
     return state

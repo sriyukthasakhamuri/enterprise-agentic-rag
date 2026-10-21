@@ -1,3 +1,4 @@
+from app.retrieval.qdrant_retriever import retrieve_qdrant_context
 from fastapi import FastAPI
 from pydantic import BaseModel
 
@@ -202,4 +203,15 @@ def agent_ask(request: QueryRequest):
         "answer": result["answer"],
         "confidence": result["confidence"],
         "retry_count": result["retry_count"],
+    }
+@app.post("/retrieve/qdrant")
+def retrieve_qdrant(request: QueryRequest):
+    results = retrieve_qdrant_context(
+        request.query
+    )
+
+    return {
+        "query": request.query,
+        "results": results,
+        "count": len(results),
     }
