@@ -16,3 +16,5 @@ class AgentState(TypedDict):
     confidence: float
 
     retry_count: int
+
+    rewritten_query: Optional[str]
