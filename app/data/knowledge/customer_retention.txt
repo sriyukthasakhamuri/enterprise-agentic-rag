@@ -1,0 +1,11 @@
+Customer Retention Policy
+
+Customer churn often increases when customers experience repeated delivery delays, unresolved support issues, or poor service quality.
+
+Customers who submit frequent support tickets are at higher risk of cancelling their subscriptions if issues remain unresolved.
+
+Retention can improve when high-risk customers receive proactive outreach, personalized support, and faster issue resolution.
+
+Premium customers tend to remain more loyal when support response times stay within agreed service-level targets.
+
+Customer satisfaction is strongly influenced by the consistency of service delivery and the quality of support interactions.

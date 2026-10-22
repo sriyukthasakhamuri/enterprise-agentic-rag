@@ -1,0 +1,11 @@
+Revenue Risk Analysis
+
+Revenue declines can be associated with higher order cancellations, delivery delays, and lower purchase volume.
+
+A rise in cancelled orders can reduce recognized revenue and may also indicate worsening customer experience.
+
+Lower repeat-purchase behavior can create longer-term revenue risk even when short-term order volume appears stable.
+
+Delivery performance, customer satisfaction, and retention trends should be reviewed together when investigating revenue decline.
+
+Revenue risk analysis should combine structured business metrics with operational and customer-experience evidence.
