@@ -1,0 +1,55 @@
+[
+  {
+    "id": "eval_001",
+    "question": "What factors can cause customer churn?",
+    "expected_route": "vector",
+    "expected_terms": [
+      "delivery",
+      "support",
+      "service"
+    ]
+  },
+  {
+    "id": "eval_002",
+    "question": "Why can delivery delays increase customer churn?",
+    "expected_route": "vector",
+    "expected_terms": [
+      "delivery",
+      "customer",
+      "churn"
+    ]
+  },
+  {
+    "id": "eval_003",
+    "question": "What is total revenue?",
+    "expected_route": "sql",
+    "expected_terms": [
+      "1040000"
+    ]
+  },
+  {
+    "id": "eval_004",
+    "question": "What is the average order value?",
+    "expected_route": "sql",
+    "expected_terms": [
+      "average_order_value"
+    ]
+  },
+  {
+    "id": "eval_005",
+    "question": "How many customers are there?",
+    "expected_route": "sql",
+    "expected_terms": [
+      "total_customers"
+    ]
+  },
+  {
+    "id": "eval_006",
+    "question": "What is total revenue and explain what factors could cause it to decline?",
+    "expected_route": "both",
+    "expected_terms": [
+      "1040000",
+      "delivery"
+    ]
+  }
+]
