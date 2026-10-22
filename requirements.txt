@@ -6,3 +6,4 @@ langchain-ollama
 langgraph
 qdrant-client
 sentence-transformers
+redis

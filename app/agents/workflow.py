@@ -90,9 +90,14 @@ def answer_node(state: AgentState) -> AgentState:
     )
 
     state["answer"] = generate_llm_answer(
-        query=query_to_use,
-        context=context,
-    )
+    query=query_to_use,
+    context=context,
+    conversation_history=state.get(
+        "conversation_history",
+        [],
+    ),
+)
+    
 
     return state
 
