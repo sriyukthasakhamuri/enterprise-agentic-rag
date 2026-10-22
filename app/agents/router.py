@@ -1,53 +1,102 @@
 from app.agents.state import AgentState
 
 
-def route_query(state: AgentState) -> AgentState:
-    query = state["query"].lower()
+SQL_KEYWORDS = [
+    "count",
+    "how many",
+    "average",
+    "avg",
+    "sum",
+    "total",
+    "revenue",
+    "sales",
+    "order value",
+    "average order",
+    "average order value",
+    "total orders",
+    "total customers",
+    "customer count",
+    "churn rate",
+    "average delivery delay",
+    "highest",
+    "lowest",
+    "top",
+    "metric",
+]
 
-    sql_keywords = [
-      "count",
-      "average",
-      "sum",
-      "total",
-      "revenue",
-      "sales",
-      "top",
-      "highest",
-      "lowest",
-      "how many",
-    ]
-   
 
-    vector_keywords = [
-        "explain",
-        "why",
-        "policy",
-        "document",
-        "meaning",
-        "describe",
-        "recommend",
-        "cause",
-    ]
+VECTOR_KEYWORDS = [
+    "explain",
+    "why",
+    "reason",
+    "reasons",
+    "cause",
+    "causes",
+    "factor",
+    "factors",
+    "risk",
+    "risks",
+    "issue",
+    "issues",
+    "affect",
+    "impact",
+    "meaning",
+    "describe",
+    "policy",
+    "guidance",
+    "recommend",
+    "recommendation",
+    "retention",
+    "loyalty",
+    "support",
+    "service quality",
+    "customer satisfaction",
+    "likely to churn",
+    "cancel",
+    "cancelling",
+    "buy again",
+]
 
-    has_sql_signal = any(
+
+def contains_any(
+    query: str,
+    keywords: list[str],
+) -> bool:
+    return any(
         keyword in query
-        for keyword in sql_keywords
+        for keyword in keywords
     )
 
-    has_vector_signal = any(
-        keyword in query
-        for keyword in vector_keywords
+
+def route_query(
+    state: AgentState,
+) -> AgentState:
+
+    query = state["query"].lower().strip()
+
+    has_sql_signal = contains_any(
+        query,
+        SQL_KEYWORDS,
     )
 
-    if has_sql_signal and has_vector_signal:
-        route = "both"
+    has_vector_signal = contains_any(
+        query,
+        VECTOR_KEYWORDS,
+    )
+
+    if (
+        has_sql_signal
+        and has_vector_signal
+    ):
+        state["route"] = "both"
+
     elif has_sql_signal:
-        route = "sql"
-    elif has_vector_signal:
-        route = "vector"
-    else:
-        route = "both"
+        state["route"] = "sql"
 
-    state["route"] = route
+    elif has_vector_signal:
+        state["route"] = "vector"
+
+    else:
+        state["route"] = "vector"
 
     return state
