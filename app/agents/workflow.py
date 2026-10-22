@@ -1,3 +1,5 @@
+from concurrent.futures import ThreadPoolExecutor
+
 from langgraph.graph import StateGraph, END
 
 from app.agents.state import AgentState
@@ -43,6 +45,39 @@ def sql_node(state: AgentState) -> AgentState:
     return state
 
 
+def parallel_retrieval_node(
+    state: AgentState,
+) -> AgentState:
+    query_to_use = (
+        state.get("rewritten_query")
+        or state["query"]
+    )
+
+    with ThreadPoolExecutor(
+        max_workers=2
+    ) as executor:
+
+        vector_future = executor.submit(
+            retrieve_qdrant_context,
+            query_to_use,
+        )
+
+        sql_future = executor.submit(
+            retrieve_sql_context,
+            query_to_use,
+        )
+
+        state["vector_results"] = (
+            vector_future.result()
+        )
+
+        state["sql_results"] = (
+            sql_future.result()
+        )
+
+    return state
+
+
 def answer_node(state: AgentState) -> AgentState:
     context = {
         "vector_results": state["vector_results"],
@@ -62,7 +97,10 @@ def answer_node(state: AgentState) -> AgentState:
     return state
 
 
-def evaluation_node(state: AgentState) -> AgentState:
+def evaluation_node(
+    state: AgentState,
+) -> AgentState:
+
     context = {
         "vector_results": state["vector_results"],
         "sql_results": state["sql_results"],
@@ -78,7 +116,10 @@ def evaluation_node(state: AgentState) -> AgentState:
     return state
 
 
-def rewrite_node(state: AgentState) -> AgentState:
+def rewrite_node(
+    state: AgentState,
+) -> AgentState:
+
     state["retry_count"] += 1
 
     state["rewritten_query"] = rewrite_query(
@@ -92,22 +133,27 @@ def rewrite_node(state: AgentState) -> AgentState:
     return state
 
 
-def route_decision(state: AgentState) -> str:
+def route_decision(
+    state: AgentState,
+) -> str:
+
     return state["route"]
 
 
-def after_vector(state: AgentState) -> str:
-    if state["route"] == "both":
-        return "sql"
+def evaluation_decision(
+    state: AgentState,
+) -> str:
 
-    return "answer"
-
-
-def evaluation_decision(state: AgentState) -> str:
-    if state["confidence"] >= CONFIDENCE_THRESHOLD:
+    if (
+        state["confidence"]
+        >= CONFIDENCE_THRESHOLD
+    ):
         return "end"
 
-    if state["retry_count"] >= MAX_RETRIES:
+    if (
+        state["retry_count"]
+        >= MAX_RETRIES
+    ):
         return "end"
 
     return "rewrite"
@@ -131,6 +177,11 @@ workflow.add_node(
 )
 
 workflow.add_node(
+    "parallel_retrieval",
+    parallel_retrieval_node,
+)
+
+workflow.add_node(
     "answer",
     answer_node,
 )
@@ -147,23 +198,23 @@ workflow.add_node(
 
 workflow.set_entry_point("router")
 
+
+# Initial routing
 workflow.add_conditional_edges(
     "router",
     route_decision,
     {
         "vector": "vector",
         "sql": "sql",
-        "both": "vector",
+        "both": "parallel_retrieval",
     },
 )
 
-workflow.add_conditional_edges(
+
+# Retrieval → Answer
+workflow.add_edge(
     "vector",
-    after_vector,
-    {
-        "sql": "sql",
-        "answer": "answer",
-    },
+    "answer",
 )
 
 workflow.add_edge(
@@ -172,10 +223,19 @@ workflow.add_edge(
 )
 
 workflow.add_edge(
+    "parallel_retrieval",
+    "answer",
+)
+
+
+# Answer → Evaluation
+workflow.add_edge(
     "answer",
     "evaluate",
 )
 
+
+# Evaluation → End or Rewrite
 workflow.add_conditional_edges(
     "evaluate",
     evaluation_decision,
@@ -185,14 +245,17 @@ workflow.add_conditional_edges(
     },
 )
 
+
+# Rewritten query follows same route again
 workflow.add_conditional_edges(
     "rewrite",
     route_decision,
     {
         "vector": "vector",
         "sql": "sql",
-        "both": "vector",
+        "both": "parallel_retrieval",
     },
 )
+
 
 agent_graph = workflow.compile()
