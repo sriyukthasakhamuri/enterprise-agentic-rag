@@ -3,6 +3,7 @@
     "id": "eval_001",
     "question": "What factors can cause customer churn?",
     "expected_route": "vector",
+    "evaluation_type": "retrieval",
     "expected_terms": [
       "delivery",
       "support",
@@ -13,6 +14,7 @@
     "id": "eval_002",
     "question": "What operational issues can make customers less likely to buy again?",
     "expected_route": "vector",
+    "evaluation_type": "retrieval",
     "expected_terms": [
       "delivery",
       "repeat",
@@ -23,6 +25,7 @@
     "id": "eval_003",
     "question": "What is total revenue?",
     "expected_route": "sql",
+    "evaluation_type": "retrieval",
     "expected_terms": [
       "1040000"
     ]
@@ -31,6 +34,7 @@
     "id": "eval_004",
     "question": "How many customers do we have?",
     "expected_route": "sql",
+    "evaluation_type": "retrieval",
     "expected_terms": [
       "total_customers"
     ]
@@ -39,6 +43,7 @@
     "id": "eval_005",
     "question": "What is the churn rate?",
     "expected_route": "sql",
+    "evaluation_type": "retrieval",
     "expected_terms": [
       "churn_rate"
     ]
@@ -47,6 +52,7 @@
     "id": "eval_006",
     "question": "What is total revenue and what business issues could put it at risk?",
     "expected_route": "both",
+    "evaluation_type": "retrieval",
     "expected_terms": [
       "1040000",
       "delivery"
@@ -56,6 +62,7 @@
     "id": "eval_007",
     "question": "How many orders are there and what might cause customers to cancel them?",
     "expected_route": "both",
+    "evaluation_type": "retrieval",
     "expected_terms": [
       "total_orders",
       "delivery"
@@ -65,30 +72,28 @@
     "id": "eval_008",
     "question": "Which customers are most likely to churn next month?",
     "expected_route": "vector",
-    "expected_terms": [
-      "not enough evidence"
-    ]
+    "evaluation_type": "groundedness",
+    "expected_answer_behavior": "insufficient_evidence"
   },
   {
     "id": "eval_009",
     "question": "Did revenue decline because of a competitor launching a cheaper product?",
     "expected_route": "both",
-    "expected_terms": [
-      "not enough evidence"
-    ]
+    "evaluation_type": "groundedness",
+    "expected_answer_behavior": "insufficient_evidence"
   },
   {
     "id": "eval_010",
     "question": "What was revenue in 2025?",
     "expected_route": "sql",
-    "expected_terms": [
-      "1040000"
-    ]
+    "evaluation_type": "groundedness",
+    "expected_answer_behavior": "insufficient_evidence"
   },
   {
     "id": "eval_011",
     "question": "Explain why poor delivery performance can affect retention.",
     "expected_route": "vector",
+    "evaluation_type": "retrieval",
     "expected_terms": [
       "delivery",
       "retention"
@@ -98,6 +103,7 @@
     "id": "eval_012",
     "question": "What is the average delivery delay and how could that affect customer loyalty?",
     "expected_route": "both",
+    "evaluation_type": "retrieval",
     "expected_terms": [
       "average_delivery_delay_days",
       "customer"
